@@ -1,12 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart'; // Provider paketini içe aktardık
+import 'firebase_options.dart';
 import 'core/routing/app_router.dart';
+import 'features/auth/providers/auth_provider.dart'; // Yazdığımız sınıf
 
 void main() async {
-  // Flutter motorunun tam olarak başlatıldığından emin oluyoruz.
-  // Asenkron AppInitializer ve Firebase başlatma kodları ileride buraya eklenecek.
   WidgetsFlutterBinding.ensureInitialized();
+  
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
-  runApp(const DstekApp());
+  runApp(
+    // MultiProvider ile uygulamamızı sarmalıyoruz ki ileride yeni provider'lar ekleyebilelim
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+      ],
+      child: const DstekApp(),
+    ),
+  );
 }
 
 class DstekApp extends StatelessWidget {
@@ -21,7 +35,6 @@ class DstekApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
         useMaterial3: true,
       ),
-      // Klasik yönlendirme yerine GoRouter'ı sisteme tanıtıyoruz
       routerConfig: appRouter,
     );
   }

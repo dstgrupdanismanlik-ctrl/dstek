@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -20,10 +22,36 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  Future<void> _handleLogin() async {
+    if (_formKey.currentState!.validate()) {
+      try {
+        // Provider üzerinden Firebase'e giriş isteği yolluyoruz
+        await context.read<AuthProvider>().signIn(
+              _emailController.text.trim(),
+              _passwordController.text.trim(),
+            );
+            
+        // Giriş başarılıysa ana sayfaya yönlendir
+        if (mounted) context.go('/home');
+      } catch (e) {
+        // Hata varsa ekranda küçük bir uyarı (SnackBar) göster
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Giriş başarısız. Lütfen bilgilerinizi kontrol edin.'),
+              backgroundColor: Colors.redAccent,
+            ),
+          );
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    // PRD Kuralı: Klavye duyarlılığı için alt boşluk hesabı
     final bottomPadding = MediaQuery.of(context).viewInsets.bottom;
+    // Provider'daki yükleme durumunu dinliyoruz
+    final isLoading = context.watch<AuthProvider>().isLoading;
 
     return Scaffold(
       body: Center(
@@ -32,8 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
             left: 24.0,
             right: 24.0,
             top: 24.0,
-            // Klavye açıldığında formu yukarı kaydıran dinamik dolgu
-            bottom: bottomPadding + 24.0, 
+            bottom: bottomPadding + 24.0,
           ),
           child: Form(
             key: _formKey,
@@ -47,10 +74,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   'DSTEK',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 32, 
-                    fontWeight: FontWeight.bold, 
-                    color: Colors.blueAccent
-                  ),
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blueAccent),
                 ),
                 const Text(
                   'Takip Sistemine Hoş Geldiniz',
@@ -58,7 +84,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: TextStyle(fontSize: 16, color: Colors.grey),
                 ),
                 const SizedBox(height: 48),
-
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
@@ -67,9 +92,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     prefixIcon: Icon(Icons.email),
                     border: OutlineInputBorder(),
                   ),
+                  validator: (value) => value!.isEmpty ? 'E-posta boş olamaz' : null,
                 ),
                 const SizedBox(height: 16),
-
                 TextFormField(
                   controller: _passwordController,
                   obscureText: true,
@@ -78,20 +103,24 @@ class _LoginScreenState extends State<LoginScreen> {
                     prefixIcon: Icon(Icons.lock),
                     border: OutlineInputBorder(),
                   ),
+                  validator: (value) => value!.isEmpty ? 'Şifre boş olamaz' : null,
                 ),
                 const SizedBox(height: 24),
-
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     backgroundColor: Colors.blueAccent,
                     foregroundColor: Colors.white,
                   ),
-                  onPressed: () {
-                    // İleride Firebase Auth eklenecek, şimdilik test için yönlendiriyoruz.
-                    context.go('/home');
-                  },
-                  child: const Text('Giriş Yap', style: TextStyle(fontSize: 18)),
+                  // Eğer yükleniyorsa butonu kilitle (null), değilse fonksiyona bağla
+                  onPressed: isLoading ? null : _handleLogin,
+                  child: isLoading
+                      ? const SizedBox(
+                          height: 24,
+                          width: 24,
+                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        )
+                      : const Text('Giriş Yap', style: TextStyle(fontSize: 18)),
                 ),
               ],
             ),

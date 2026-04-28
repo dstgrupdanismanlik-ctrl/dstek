@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "745081783885",
+    "project_id": "dstek-f4235",
+    "storage_bucket": "dstek-f4235.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:745081783885:android:3822184168a44317b77e04",
+        "android_client_info": {
+          "package_name": "com.example.dstek"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCBltZcS86YvQx-7TE3g589GwuaENLkSLc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

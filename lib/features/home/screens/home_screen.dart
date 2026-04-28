@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-// Ortak bileşenimiz olan ExpandableCard'ı içe aktarıyoruz
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart'; // Provider paketini ekledik
 import '../../../shared/widgets/expandable_card.dart';
+import '../../auth/providers/auth_provider.dart'; // Auth Provider'ımızı ekledik
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,7 +16,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // Alt sekmelerde gösterilecek sayfa içerikleri
   final List<Widget> _pages = [
-    // 1. Sekme: Ana Sayfa (Genişleyebilir Kartlarımızı buraya ekledik)
     ListView(
       padding: const EdgeInsets.only(top: 16, bottom: 80),
       children: const [
@@ -36,9 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ],
     ),
-    // 2. Sekme: Ödevler
     const Center(child: Text('Ödevler ve Görevler', style: TextStyle(fontSize: 20))),
-    // 3. Sekme: Profil
     const Center(child: Text('Profil', style: TextStyle(fontSize: 20))),
   ];
 
@@ -75,16 +74,20 @@ class _HomeScreenState extends State<HomeScreen> {
             ListTile(
               leading: const Icon(Icons.exit_to_app),
               title: const Text('Çıkış Yap'),
-              onTap: () {
-                // İleride oturum kapatma işlemleri buraya eklenecek
+              onTap: () async {
+                // 1. Firebase üzerinden oturumu kapat
+                await context.read<AuthProvider>().signOut();
+                
+                // 2. Çıkış başarılıysa kullanıcıyı Giriş Ekranına (Login) geri yolla
+                if (context.mounted) {
+                  context.go('/login');
+                }
               },
             ),
           ],
         ),
       ),
-      // Seçilen sekmeye göre değişen orta içerik alanı
       body: _pages[_selectedIndex],
-      // Ekranın altındaki hızlı gezinme çubuğu
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Ana Sayfa'),
