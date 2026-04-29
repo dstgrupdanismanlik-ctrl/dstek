@@ -1,11 +1,10 @@
 import 'package:go_router/go_router.dart';
-// Gerçek ekran dosyalarımızı içeri aktarıyoruz
 import '../../core/init/app_initializer.dart';
 import '../../features/auth/screens/login_screen.dart';
+import '../../features/auth/screens/register_screen.dart'; // Yeni ekran eklendi
 import '../../features/home/screens/home_screen.dart';
 
 final GoRouter appRouter = GoRouter(
-  // Uygulamanın başlangıç rotası artık AppInitializer (Splash Screen) oldu
   initialLocation: '/',
   routes: [
     GoRoute(
@@ -15,6 +14,10 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/login',
       builder: (context, state) => const LoginScreen(),
+    ),
+    GoRoute(
+      path: '/register', // Yeni Rota
+      builder: (context, state) => const RegisterScreen(),
     ),
     GoRoute(
       path: '/home',

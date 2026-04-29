@@ -25,16 +25,13 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _handleLogin() async {
     if (_formKey.currentState!.validate()) {
       try {
-        // Provider üzerinden Firebase'e giriş isteği yolluyoruz
         await context.read<AuthProvider>().signIn(
               _emailController.text.trim(),
               _passwordController.text.trim(),
             );
             
-        // Giriş başarılıysa ana sayfaya yönlendir
         if (mounted) context.go('/home');
       } catch (e) {
-        // Hata varsa ekranda küçük bir uyarı (SnackBar) göster
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -50,17 +47,13 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final bottomPadding = MediaQuery.of(context).viewInsets.bottom;
-    // Provider'daki yükleme durumunu dinliyoruz
     final isLoading = context.watch<AuthProvider>().isLoading;
 
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(
           padding: EdgeInsets.only(
-            left: 24.0,
-            right: 24.0,
-            top: 24.0,
-            bottom: bottomPadding + 24.0,
+            left: 24.0, right: 24.0, top: 24.0, bottom: bottomPadding + 24.0,
           ),
           child: Form(
             key: _formKey,
@@ -70,57 +63,37 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 const Icon(Icons.school, size: 80, color: Colors.blueAccent),
                 const SizedBox(height: 16),
-                const Text(
-                  'DSTEK',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blueAccent),
-                ),
-                const Text(
-                  'Takip Sistemine Hoş Geldiniz',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 16, color: Colors.grey),
-                ),
+                const Text('DSTEK', textAlign: TextAlign.center, style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
+                const Text('Takip Sistemine Hoş Geldiniz', textAlign: TextAlign.center, style: TextStyle(fontSize: 16, color: Colors.grey)),
                 const SizedBox(height: 48),
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
-                    labelText: 'E-posta',
-                    prefixIcon: Icon(Icons.email),
-                    border: OutlineInputBorder(),
-                  ),
+                  decoration: const InputDecoration(labelText: 'E-posta', prefixIcon: Icon(Icons.email), border: OutlineInputBorder()),
                   validator: (value) => value!.isEmpty ? 'E-posta boş olamaz' : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _passwordController,
                   obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Şifre',
-                    prefixIcon: Icon(Icons.lock),
-                    border: OutlineInputBorder(),
-                  ),
+                  decoration: const InputDecoration(labelText: 'Şifre', prefixIcon: Icon(Icons.lock), border: OutlineInputBorder()),
                   validator: (value) => value!.isEmpty ? 'Şifre boş olamaz' : null,
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    backgroundColor: Colors.blueAccent,
-                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16), backgroundColor: Colors.blueAccent, foregroundColor: Colors.white,
                   ),
-                  // Eğer yükleniyorsa butonu kilitle (null), değilse fonksiyona bağla
                   onPressed: isLoading ? null : _handleLogin,
                   child: isLoading
-                      ? const SizedBox(
-                          height: 24,
-                          width: 24,
-                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                        )
+                      ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
                       : const Text('Giriş Yap', style: TextStyle(fontSize: 18)),
+                ),
+                const SizedBox(height: 16),
+                // KAYIT OL SAYFASINA YÖNLENDİREN BUTON EKLENDİ
+                TextButton(
+                  onPressed: () => context.push('/register'),
+                  child: const Text('Hesabın yok mu? Kayıt Ol', style: TextStyle(fontSize: 16, color: Colors.blueAccent)),
                 ),
               ],
             ),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart'; // Provider paketini ekledik
+import 'package:provider/provider.dart';
+import '../../auth/providers/auth_provider.dart';
 import '../../../shared/widgets/expandable_card.dart';
-import '../../auth/providers/auth_provider.dart'; // Auth Provider'ımızı ekledik
+import '../../profile/screens/profile_screen.dart'; // YENİ EKLENDİ
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,31 +14,24 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
-  // Alt sekmelerde gösterilecek sayfa içerikleri
+  // Alt sekmelerde gösterilecek geçici ve GERÇEK sayfa içerikleri
   final List<Widget> _pages = [
+    // 0. Sekme: Ana Sayfa
     ListView(
-      padding: const EdgeInsets.only(top: 16, bottom: 80),
+      padding: const EdgeInsets.all(16.0),
       children: const [
-        ExpandableCard(
-          title: 'Haftalık Koçluk Notu',
-          leadingIcon: Icons.menu_book,
-          content: Text(
-            'Bu hafta matematikte türev konusuna ağırlık vermelisin. Deneme sınavındaki hataların genellikle işlem hatasından kaynaklanıyor. Lütfen daha dikkatli ol.',
-            style: TextStyle(fontSize: 14, height: 1.5),
-          ),
-        ),
-        ExpandableCard(
-          title: 'Sistem Duyurusu',
-          leadingIcon: Icons.campaign,
-          content: Text(
-            'Yarın saat 10:00 ile 12:00 arasında sistemde bakım çalışması yapılacaktır. Lütfen bu saatler arasında deneme girişi yapmayınız.',
-            style: TextStyle(fontSize: 14, height: 1.5),
-          ),
-        ),
+        Text('Hoş Geldin!', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+        SizedBox(height: 16),
+        ExpandableCard(title: 'Günün Motivasyonu', icon: Icons.star, content: 'Başarı, küçük çabaların her gün tekrarlanmasıdır.'),
+        SizedBox(height: 16),
+        ExpandableCard(title: 'Koçluk Notları', icon: Icons.note_alt, content: 'Matematik branşında oran orantı konusuna ağırlık verilmeli.'),
       ],
     ),
+    // 1. Sekme: Görevler (Şimdilik geçici)
     const Center(child: Text('Ödevler ve Görevler', style: TextStyle(fontSize: 20))),
-    const Center(child: Text('Profil', style: TextStyle(fontSize: 20))),
+    
+    // 2. Sekme: PROFIL SAYFASI (GERÇEK SAYFAYA BAĞLANDI)
+    const ProfileScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -55,7 +48,6 @@ class _HomeScreenState extends State<HomeScreen> {
         centerTitle: true,
         elevation: 2,
       ),
-      // Sol taraftan açılan Hamburger Menü
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -67,21 +59,13 @@ class _HomeScreenState extends State<HomeScreen> {
             ListTile(
               leading: const Icon(Icons.settings),
               title: const Text('Ayarlar'),
-              onTap: () {
-                // İleride ayarlar rotasına yönlendirme yapılacak
-              },
+              onTap: () {},
             ),
             ListTile(
               leading: const Icon(Icons.exit_to_app),
               title: const Text('Çıkış Yap'),
               onTap: () async {
-                // 1. Firebase üzerinden oturumu kapat
                 await context.read<AuthProvider>().signOut();
-                
-                // 2. Çıkış başarılıysa kullanıcıyı Giriş Ekranına (Login) geri yolla
-                if (context.mounted) {
-                  context.go('/login');
-                }
               },
             ),
           ],
@@ -89,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
+        items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Ana Sayfa'),
           BottomNavigationBarItem(icon: Icon(Icons.assignment), label: 'Görevler'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
